@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block mycss %}
+    <style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    .box {
+
+        vertical-align: center;
+        text-align:center;
+    }
+    </style>
+{% endblock %}
+
+{% block bodycontent %}
+<div class="box">
+    <h2>Can't find page. <span>404！</span></h2>
+    <p><a href="{% url 'blog:index' %}"> 返回首页</a></p>
+</div>
+{% endblock %}

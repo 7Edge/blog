@@ -1,0 +1,54 @@
+{# 公告 #}
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <h3 class="panel-title">公告</h3>
+    </div>
+    <div class="panel-body">
+        <ul class="panel-list" type="none">
+            <li><span>用户别名: {{ user_obj.username }}</span></li>
+            <li><span>园龄: {{ age_days }} 天</span></li>
+            <li><span>随笔数: {{ user_obj.article_set.count }} 篇</span></li>
+        </ul>
+    </div>
+</div>
+
+{#随笔分类#}
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <h3 class="panel-title">随笔分类</h3>
+    </div>
+
+    <div class="list-group">
+        {% for item in article_category_queryset %}
+            <a href="{% url 'blog:display_articles'  user_obj.username 'category' item.category__title %}" class="list-group-item">{{ item.category__title }} ({{ item.count }})</a>
+        {% endfor %}
+    </div>
+</div>
+
+
+{#标签#}
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <h3 class="panel-title">我的标签</h3>
+    </div>
+
+    <div class="list-group">
+        {% for item in article_tag_queryset %}
+            <a href="{% url 'blog:display_articles'  user_obj.username 'tag' item.title %}" class="list-group-item">{{ item.title }} ({{ item.count }})</a>
+        {% endfor %}
+    </div>
+</div>
+
+
+{#归档#}
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <h3 class="panel-title">随笔归档</h3>
+    </div>
+
+    <div class="list-group">
+        {% for item in article_archive_queryset %}
+            <a href="{% url 'blog:display_articles'  user_obj.username 'archive' item.y_m %}" class="list-group-item">{{ item.y_m }} ({{ item.count }})</a>
+        {% endfor %}
+    </div>
+</div>

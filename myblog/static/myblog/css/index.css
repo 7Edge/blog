@@ -1,0 +1,182 @@
+
+* {
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    padding-top: 51px;
+}
+
+#bs-example-navbar-collapse-1 ul li.active {
+    background-color: #204d74;
+}
+
+#main-content {
+    padding: 0 20px;
+    margin: 0;
+    height: 2882px;
+}
+
+#main-nav {
+    height: 43px;
+    margin: 10px 0;
+    line-height: 43px;
+    vertical-align: middle;
+}
+
+#main-nav a {
+    border-radius: 20px;
+    margin: 0 8px;
+}
+
+#bs-example-navbar-collapse-1 ul li.mouseon {
+    background-color: #1b6d85;
+    color: white;
+}
+
+#bs-example-navbar-collapse-1 ul li > a {
+    color: #c0cddf;
+}
+
+#bs-example-navbar-collapse-1 ul li ul li > a {
+    color: black;
+}
+
+.glyphicon.glyphicon-user {
+    vertical-align: -1px;
+}
+
+.glyphicon.glyphicon-heart {
+    vertical-align: -1px;
+    padding-right: 5px;
+    color: deeppink;
+}
+
+.glyphicon.glyphicon-edit {
+    color: green;
+}
+
+.article_info {
+    margin-top: 20px;
+    font-size: 11px;
+}
+
+.article_summary {
+    font-size:14px;
+}
+
+
+
+
+.form-zjq-control {
+    width: 85%;
+    margin: auto;
+}
+
+.zjq-ul {
+    display: inline-block;
+    float: right;
+    margin-right: 10px;
+}
+
+.zjq-ul > a {
+    color: green
+}
+
+.zjq-ul > span {
+    color: darkgrey;
+    font-size: 13px;
+}
+
+.btn-zjq {
+    width: 140px;
+}
+
+.btn-zjq-active {
+    background-color: #1b6d85;
+    color: white;
+}
+
+.item {
+    clear: both;
+    position: relative;
+    padding-top: 10px;
+    overflow: hidden;
+    border-bottom: 1px solid #dce7f4;
+}
+
+.item .news-pic {
+    float: right;
+    margin-left: 10px;
+    padding-bottom: 5px;
+}
+
+.item .news-pic img {
+    display: inline;
+    width: 60px;
+    height: 60px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 1px;
+    vertical-align: top;
+}
+
+.item .digg-a {
+    margin: 0 10px;
+}
+
+.item .discus-a {
+    margin: 0 10px;
+}
+
+.item .comment-box-area {
+    margin: 10px
+}
+
+.item .part2 .digg-done {
+    color: red;
+    font-size: 16px;
+}
+
+.hidden-case-zjq {
+    display: none;
+}
+
+.collpe {
+}
+
+#exampleInputPhone4 {
+    width: 55%;
+    display: inline-block;
+}
+
+.step-zjq {
+    width: 284px;
+    height: 40px;
+    position: relative;
+    margin-bottom: 10px;
+}
+
+.step-zjq > a {
+    line-height: 40px;
+    vertical-align: middle;
+}
+
+.active-zjq {
+    color: #337ab7;
+}
+
+#phone4 .form-control {
+    margin-bottom: 5px;
+}
+
+@media screen and (min-width: 766px) {
+
+}
+
+@media screen and (max-width: 766px) {
+    .zjqcon {
+        width: 100%;
+    }
+}

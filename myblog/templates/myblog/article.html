@@ -1,0 +1,265 @@
+{% extends 'myblog/personsite.html' %}
+
+{% load static %}
+
+{% block childstyle %}
+    <link rel="stylesheet" href="{% static 'myblog/css/article.css' %}">
+{% endblock %}
+
+{% block right_col %}
+    {# 文章及评论 #}
+    <div class="article_box">
+        {# 文章标题和内容 #}
+        <h2><a href="">{{ article_obj.title }}</a></h2>
+        <div class="article_content">
+            {{ article_obj.content|safe }}
+        </div>
+
+        <p class="area_seperator"></p>
+
+        {# 评论展示区域 #}
+        <h5><strong>评论树</strong></h5>
+        <div class="comment_list">
+            <div id="comment_template" style="display:none;">
+                <div class="comment_item ">
+                    <div class="comment_info clearfix">
+                        <div class="pull-left">
+                            <span class="floor_box"># <span class="floor">0</span> 楼</span>
+                            <span class="time">2018-08-21 10:10:10</span>
+                            <strong> <a href="">root</a>
+                            </strong>
+                        </div>
+                        <div class="pull-right">
+                            <a href="#tail" class='reply' user_name="" comment_pk="">回复</a> &nbsp;&nbsp;&nbsp;
+                        </div>
+                    </div>
+                    <div class="comment_detail" detail_comment_pk="">
+                        <p>你好！</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <p class="area_seperator"></p>
+
+        {# 评论发布 #}
+        {% if request.user.is_authenticated %}
+            <form>
+                <label for="comment_user"><span class="glyphicon glyphicon-comment"></span> &nbsp;发表评论</label>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
+                    <input id='comment_user' class='form-control' type="text" disabled name=""
+                           value="{{ request.user.username }} ">
+                </div>
+                <p></p>
+                <div class="form-group">
+                    <label for="comment_content">评论内容：</label>
+                    <textarea id="comment_content" name="content" cols="50" rows="20"></textarea>
+                </div>
+
+                <button type="button" class="btn btn-info" id="sub_comment">评论</button>
+            </form>
+        {% else %}
+            <div>
+                <p><span class="glyphicon glyphicon-info-sign"></span> 注册用户登录后才能发表评论，请 <a
+                        href="{% url 'blog:login' %}?next={{ request.path }}">登录</a> 或 <a
+                        href="{% url 'blog:register' %}">注册</a> ，<a
+                        href="{% url 'blog:index' %}">访问</a>网站首页。 </p>
+            </div>
+
+        {% endif %}
+        <p id="tail"></p>
+    </div>
+
+    {# 点赞与反对 #}
+    <div class="digg_bar" data-toggle="popover" data-trigger="focus" data-placement="left" data-content="你已经点赞过"
+         article_id="{{ article_obj.pk }}">
+        {% csrf_token %}
+        <div>
+            <span class="glyphicon glyphicon-thumbs-up"></span>
+            <div>推荐</div>
+            <p class="digg_cnt">{{ article_obj.up_count }}</p>
+        </div>
+        <hr>
+        <div>
+            <span class="glyphicon glyphicon-thumbs-down"></span>
+            {#        <a href="javascript:;"><span class="glyphicon glyphicon-thumbs-down"></span></a>#}
+            <div>反对</div>
+            <p class="oppose_cnt">{{ article_obj.down_count }}</p>
+        </div>
+
+    </div>
+
+{% endblock %}
+
+{% block customjs %}
+
+    {# kindeditor编辑器插件引入 #}
+    <script src="{% static 'kindeditor/kindeditor-all-min.js' %}"></script>
+    <script src="{% static 'kindeditor/lang/zh-CN.js' %}"></script>
+    <script>
+        var editor;
+        KindEditor.ready(function (K) {
+            var editor_options = {
+                width: '700px',
+                height: '120px',
+                themeType: 'simple',
+                uploadJson: '/upload/',
+                extraFileUploadParams: {
+                    csrfmiddlewaretoken: $('[name=csrfmiddlewaretoken]').val()
+                },
+                items: ['source', '|', 'justifyleft', 'justifycenter', 'justifyright', 'justifyfull', '|',
+                    'insertorderedlist', 'fontsize', 'forecolor', 'bold', 'italic', 'underline',
+                    'strikethrough', '|', 'image', 'link', 'unlink', 'code', 'baidumap']
+            };
+            editor = K.create('#comment_content', editor_options);
+        });
+    </script>
+
+    {#  #}
+    <script>
+        $(function () {
+            {# 点赞和踩灭鼠标悬停效果; 鼠标点击发送ajax #}
+            var $digg_bar_span = $('.digg_bar span');
+            $digg_bar_span.hover(function () {
+                $(this).toggleClass('digg_light');
+            }).click(function () {
+                var _this = $(this);
+                $.ajax({
+                    url: '/digg/',
+                    type: 'post',
+                    data: {
+                        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                        choice: $(this).hasClass('glyphicon-thumbs-up'),
+                        article_id: $(this).parents('.digg_bar').attr('article_id')
+                    },
+                    success: function (data) {
+                        if (data.result) {
+                            $(_this).siblings('p').text(function (idx, text) {
+                                return parseInt(text) + 1
+                            });
+                        }
+
+                        $('.digg_bar').attr('data-content', data.msg).popover('show');
+                        setTimeout(
+                            function () {
+                                $('.digg_bar').popover('hide')
+                            }, 1500
+                        );
+
+
+                    }
+                });
+            });
+
+            {# 全局变量 #}
+            var global_pid = "";
+            var $comment_template = $('#comment_template');
+            var $comment_list = $('.comment_list');
+
+            {# 前端加载评论树 #}
+            $.ajax({
+                url: '/comment_tree/',
+                type: 'get',
+                data: {
+                    article_id: $('.digg_bar').attr('article_id')
+                },
+                success: function (data) {
+                    var cnt = 1;
+                    $.each(data, function (idx, comment_obj) {
+                        var cm_time = comment_obj.create_time.replace('T', ' ').slice(0, -4);
+                        var cm_user_url = '/' + comment_obj.user__username + '/';
+                        var cm_user_name = comment_obj.user__username;
+                        var cm_user_pk = comment_obj.user_id;
+                        var cm_content = comment_obj.comment_content;
+                        var cm_pk = comment_obj.pk;
+                        var $new_comment = $comment_template.children('.comment_item').clone(true);
+
+                        $new_comment.find('span.time').text(cm_time);
+                        $new_comment.find('.pull-left a').attr('href', cm_user_url).text(cm_user_name);
+                        $new_comment.find('.comment_detail p').html(cm_content);
+                        $new_comment.find('.reply').attr({comment_pk: cm_pk, user_name: cm_user_name});
+                        $new_comment.find('.comment_detail').attr('detail_comment_pk', cm_pk);
+
+                        if (!comment_obj.parent_comment_id) {
+                            var floor_num = cnt;
+                            cnt += 1;
+                            $new_comment.find('span.floor').text(floor_num);
+                            $comment_list.append($new_comment);
+                        } else {
+                            $new_comment.find('.floor_box').remove();
+                            console.log($new_comment[0]);
+                            $('[detail_comment_pk=' + comment_obj.parent_comment_id + ']').append($new_comment);
+                        }
+                    });
+                }
+            });
+
+            {# 点击回复,focus到评论发布textarea,并产生和回复评论关联的父评论信息（已一个@的形式暂时并储存父评论的pk）#}
+            $('.pull-right .reply').click(function () {
+                editor.html('');
+                editor.focus();
+                parent_comment_str = '@' + $(this).attr('user_name') + ';';
+                editor.appendHtml(parent_comment_str);
+                global_pid = $(this).attr('comment_pk');
+            });
+
+            {# 评论提交和添加 #}
+            $('#sub_comment').click(function () {
+                {# 被这个坑惨了 #}
+                editor.sync();
+
+                var content = $('#comment_content').val();
+                if (global_pid) {
+                    var index = content.indexOf(';');
+                    content = content.slice(index + 1);
+                }
+
+                if (!content) {
+                    alert('评论内容不能为空！')
+                } else {
+                    $.ajax({
+                        url: '/comment/',
+                        type: 'post',
+                        data: {
+                            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                            comment_cont: content,
+                            article_id: $('.digg_bar').attr('article_id'),
+                            pid: global_pid
+                        },
+                        success: function (data) {
+                            var cm_time = data.cmt_createtime.replace('T', ' ').slice(0, -4);
+                            var cm_user_url = '/' + data.cmt_username + '/';
+                            var cm_user_name = data.cmt_username;
+                            var cm_user_pk = data.cmt_user_id;
+                            var cm_content = data.cmt_content;
+                            var cm_pk = data.cmt_pk;
+                            var $new_comment = $comment_template.children('.comment_item').clone(true);
+
+                            $new_comment.find('span.time').text(cm_time);
+                            $new_comment.find('.pull-left a').attr('href', cm_user_url).text(cm_user_name);
+                            $new_comment.find('.comment_detail p').html(cm_content);
+                            $new_comment.find('.reply').attr({comment_pk: cm_pk, user_name: cm_user_name});
+                            $new_comment.find('.comment_detail').attr('detail_comment_pk', cm_pk);
+
+                            if (data.cmt_parent_id) {
+                                $new_comment.find('.floor_box').remove();
+                                $('[detail_comment_pk=' + data.cmt_parent_id + ']').append($new_comment);
+                            } else {
+                                var floor_num = $('.comment_list span.floor').last().text();
+                                var new_floor_num = parseInt(floor_num) + 1;
+                                $new_comment.find('span.floor').text(new_floor_num);
+                                $comment_list.append($new_comment);
+                            }
+
+                            {# 评论提交后，清空全局pid,清空editor内容 #}
+                            global_pid = "";
+                            editor.html('');
+                        }
+                    });
+                }
+
+            });
+        });
+    </script>
+{% endblock %}

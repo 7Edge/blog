@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block bodycontent %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h3 class="panel-title text-center">用户登录</h3>
+                    </div>
+                    <div class="panel-body">
+                        <form>
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="username">用户名</label>
+                                <input type="text" class="form-control" id="username" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="password">密码</label>
+                                <input type="password" class="form-control" id="password" required>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label for="valid">验证码</label>
+                                        <input type="text" class="form-control" id="valid" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <img id='validCode' style="height:55px;width:245px;padding-top:25px;"
+                                             src="{% url 'blog:validCode' %}" alt="">
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-success pull-left">登录</button>
+                            <span class="error"></span>
+                            <a href='{% url 'blog:register' %}' class="btn btn-success pull-right">注册</a>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block customjs %}
+    {% load static %}
+    <script src="{% static 'js/login.js' %}"></script>
+{% endblock %}

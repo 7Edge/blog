@@ -1,0 +1,100 @@
+{% extends 'backend/manage.html' %}
+
+{% load static %}
+
+{% block mycss %}
+    {{ block.super }}
+
+{% endblock %}
+
+{% block manage_body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            {% block panel-title %}
+                                添加文章
+                            {% endblock %}
+                        </h3>
+                    </div>
+                    <div class="panel-body">
+                        {% block panel-body %}
+                            <form action="{% url 'backend:add_article' %}" method="post">
+                                {% csrf_token %}
+                                {# 标题和内容框 #}
+                                {% for field in form %}
+                                    <div class="form-group">
+                                        {{ field.label_tag }}
+                                        {{ field }} {{ field.errors.0 }}
+                                    </div>
+                                {% endfor %}
+                                {# 文章分类选项 #}
+                                <div class="form-group">
+                                    <p><strong>文章分类：</strong><a href="{% url 'backend:add_category' %}"><span
+                                            class="glyphicon glyphicon-plus"></span></a></p>
+                                    {% for category in category_list %}
+                                        <label class="radio-inline">
+                                            <input type="radio" name="category" required
+                                                   value="{{ category.pk }}"> {{ category.title }}
+                                        </label>
+                                    {% endfor %}
+                                </div>
+
+                                {# 标签选项 #}
+                                <div class="form-group">
+                                    <p><strong>文章标签：</strong> <a href="{% url 'backend:add_tag' %}"><span
+                                            class="glyphicon glyphicon-plus"></span></a>
+                                    </p>
+                                    {% for tag in tag_list %}
+                                        <label class="checkbox-inline">
+                                            <input type="checkbox" name="tag" required
+                                                   value="{{ tag.pk }}"> {{ tag.title }}
+                                        </label>
+                                    {% endfor %}
+                                </div>
+                                {# post表单提交 #}
+                                <input type="submit" class="btn btn-success pull-left" value="添加">
+                                <a href="{% url 'backend:manage' %}" class="btn btn-success pull-right">返回</a>
+                            </form>
+                        {% endblock %}
+
+
+                    </div>
+                </div>
+                {#                <button type="button" class="btn btn-success pull-right">添加</button>#}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block customjs %}
+    <script charset="utf-8" src="{% static 'kindeditor/kindeditor-all-min.js' %}"></script>
+    <script charset="utf-8" src="{% static 'kindeditor/lang/zh-CN.js' %}"></script>
+    <script>
+        var editor;
+        KindEditor.ready(function (K) {
+            var options = {
+                {#width: '800px',#}
+                height: '180px',
+                themeType: 'simple',
+                uploadJson: '/upload/',
+                extraFileUploadParams: {
+                    csrfmiddlewaretoken: $('[name=csrfmiddlewaretoken]').val()
+                },
+                items: ['source', '|', 'justifyleft', 'justifycenter', 'justifyright', 'justifyfull', '|',
+                    'insertorderedlist', 'fontsize', 'forecolor', 'bold', 'italic', 'underline',
+                    'strikethrough', '|', 'image', 'link', 'unlink', 'code', 'baidumap']
+            };
+            editor = K.create('#{{ form.content.id_for_label }}', options);
+        });
+    </script>
+    <script>
+        $(function () {
+            $('input[type=submit]').click(function () {
+                editor.sync();
+            });
+        });
+    </script>
+{% endblock %}

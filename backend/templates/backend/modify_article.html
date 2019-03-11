@@ -1,0 +1,105 @@
+{% extends 'backend/manage.html' %}
+
+{% load static %}
+
+{% block mycss %}
+    {{ block.super }}
+
+{% endblock %}
+
+
+{% block manage_body %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            修改
+                        </h3>
+                    </div>
+                    <div class="panel-body">
+                        <form action="{% url 'backend:modify_article' aid %}" method="post">
+                            {% csrf_token %}
+                            {% for field in form %}
+                                <div class="form-group">
+                                    {{ field.label_tag }}
+                                    {{ field }} {{ field.errors.0 }}
+                                </div>
+                            {% endfor %}
+
+                            {# 文章分类选项 #}
+                            <div class="form-group">
+                                <p><strong>文章分类：</strong></p>
+                                {% for category in category_list %}
+                                    <label class="radio-inline">
+                                        {% if category.pk == article_obj.category_id %}
+                                            <input type="radio" name="category" checked="checked"
+                                                   value="{{ category.pk }}"> {{ category.title }}
+                                        {% else %}
+                                            <input type="radio" name="category"
+                                                   value="{{ category.pk }}"> {{ category.title }}
+                                        {% endif %}
+                                    </label>
+                                {% endfor %}
+                            </div>
+
+                            {# 标签选项 #}
+                            <div class="form-group">
+                                <p><strong>文章标签：</strong></p>
+                                {% for tag in tag_list %}
+                                    <label class="checkbox-inline">
+                                        {% if tag.pk in  used_tag_list %}
+                                            <input type="checkbox" name="tag" checked="checked"
+                                                   value="{{ tag.pk }}"> {{ tag.title }}
+                                        {% else %}
+                                            <input type="checkbox" name="tag"
+                                                   value="{{ tag.pk }}"> {{ tag.title }}
+                                        {% endif %}
+                                    </label>
+                                {% endfor %}
+                            </div>
+
+                            <input type="submit" class="btn btn-success pull-left" value="修改">
+                            <a href="{% url 'backend:manage' %}" class="btn btn-success pull-right">返回</a>
+                        </form>
+                    </div>
+                </div>
+                {#                <button type="button" class="btn btn-success pull-right">添加</button>#}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block customjs %}
+    <script charset="utf-8" src="{% static 'kindeditor/kindeditor-all-min.js' %}"></script>
+    <script charset="utf-8" src="{% static 'kindeditor/lang/zh-CN.js' %}"></script>
+    <script>
+        var editor;
+        KindEditor.ready(function (K) {
+            var options = {
+                {#width: '800px',#}
+                height: '180px',
+                themeType: 'simple',
+                uploadJson: '/upload/',
+                extraFileUploadParams: {
+                    csrfmiddlewaretoken: $('[name=csrfmiddlewaretoken]').val()
+                },
+                items: ['source', '|', 'justifyleft', 'justifycenter', 'justifyright', 'justifyfull', '|',
+                    'insertorderedlist', 'fontsize', 'forecolor', 'bold', 'italic', 'underline',
+                    'strikethrough', '|', 'image', 'link', 'unlink', 'code', 'baidumap']
+            };
+            editor = K.create('#{{ form.content.id_for_label }}', options);
+        });
+    </script>
+    <script>
+        $(function () {
+            $('input[type=submit]').click(function () {
+                editor.sync();
+            });
+        });
+    </script>
+
+{% endblock %}

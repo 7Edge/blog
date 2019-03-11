@@ -1,0 +1,59 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.digg_bar {
+    display: inline-block;
+    position: fixed;
+    right: 10px;
+    bottom: 130px;
+    width: 45px;
+    background-color: #bce8f1;
+    vertical-align: middle;
+    text-align: center;
+    padding: 12px 0;
+}
+
+.digg_bar p {
+    font-size: 12px;
+    margin: 0;
+}
+
+.digg_bar a:hover {
+    color: inherit;
+}
+
+.glyphicon.glyphicon-thumbs-up {
+    font-size: 26px;
+    color: deeppink;
+}
+
+.glyphicon.glyphicon-thumbs-down {
+    font-size: 26px;
+}
+
+span.glyphicon.digg_light {
+    font-weight: bold;;
+}
+
+.input-group {
+    width: 300px;
+}
+
+.area_seperator {
+    margin: 20px 0;
+    border: lightskyblue dashed 1px;
+}
+
+.comment_detail {
+    padding: 9px 14px;
+    margin-bottom: 14px;
+    background-color: #f7f7f9;
+    border: 1px solid #e1e1e8;
+    border-radius: 4px
+}
+
+.glyphicon.glyphicon-user {
+    color: lightskyblue;
+}

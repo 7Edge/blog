@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+
+{% block mycss %}
+    <style>
+        .navbar-default {
+            background-color: #2459a2;
+        }
+
+        .navbar-default .navbar-brand {
+            color: white;
+        }
+
+        .navbar-default .navbar-nav > li > a {
+            color: white;
+        }
+    </style>
+{% endblock %}
+
+{% block bodycontent %}
+    {% block head %}
+        <div></div>
+    {% endblock %}
+    {# 文章管理导航 #}
+    <nav class="navbar navbar-default">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <a class="navbar-brand" href="{% url 'blog:index' %}">博客园</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+
+                <ul class="nav navbar-nav navbar-right">
+
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                           aria-expanded="false"><span>{{ request.user.username }}</span> <span
+                                class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{% url 'blog:personalSite' request.user.username %}">我的博客</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="{% url 'blog:logout' %}">退出</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="{% url 'blog:logout' %}">Logout</a></li>
+                </ul>
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+
+    {% block manage_body %}
+        {# 页面内容 #}
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h5 class="panel-title">操作</h5>
+                        </div>
+                        <ul class="list-group">
+                            <li class="list-group-item"><a href="{% url 'backend:add_article' %}">添加新文章</a></li>
+                            <li class="list-group-item"><a href="{% url 'backend:add_category' %}">新建分类</a></li>
+                            <li class="list-group-item"><a href="{% url 'backend:add_tag' %}">新建标签</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div>
+                        <!-- Nav tabs -->
+                        <ul class="nav nav-pills" role="tablist">
+                            <li role="presentation" class="active">
+                                <a href="#article" aria-controls="article" role="tab" data-toggle="tab">文章</a>
+                            </li>
+                            <li role="presentation">
+                                <a href="#category" aria-controls="category" role="tab" data-toggle="tab">分类</a>
+                            </li>
+                            <li role="presentation">
+                                <a href="#tag" aria-controls="tag" role="tab" data-toggle="tab">标签</a>
+                            </li>
+                        </ul>
+
+                        <!-- Tab panes -->
+                        <div class="tab-content">
+                            <div role="tabpanel" class="tab-pane active" id="article">
+                                <table class="table table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>标题</th>
+                                        <th>评论数</th>
+                                        <th>点赞数</th>
+                                        <th>反对数</th>
+                                        <th>操作</th>
+                                        <th>操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for article in article_list %}
+                                        <tr>
+                                            <td>
+                                                <a href="{% url 'blog:article' article.user.username article.pk %}">{{ article.title }}
+                                                    ({{ article.create_time|date:'Y-m-d H:i:s' }})</a>
+                                            </td>
+                                            <td>{{ article.comment_count }}</td>
+                                            <td>{{ article.up_count }}</td>
+                                            <td>{{ article.down_count }}</td>
+                                            <td><a href="{% url 'backend:modify_article' article.pk %}">编辑</a></td>
+                                            <td><a href="{% url 'backend:del_article' article.pk %}">删除</a></td>
+                                        </tr>
+                                    {% endfor %}
+
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div role="tabpanel" class="tab-pane" id="category">
+                                <table class="table table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>分类名</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for category in category_list %}
+                                        <tr>
+                                            <td>
+                                                {{ forloop.counter }}
+                                            </td>
+                                            <td>{{ category.title }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div role="tabpanel" class="tab-pane" id="tag">
+                                <table class="table table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>标签名</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for tag in tag_list %}
+                                        <tr>
+                                            <td>
+                                                {{ forloop.counter }}
+                                            </td>
+                                            <td>{{ tag.title }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    {% endblock %}
+
+{% endblock %}
+
+{% block customjs %}
+
+{% endblock %}
